@@ -1,23 +1,15 @@
 use crate::Result;
 
-/// The main database handle.
+/// Reads key-value entries from SSTable files.
 #[derive(Debug, Default)]
-pub struct Db;
+pub struct SstableReader;
 
-impl Db {
+impl SstableReader {
     pub fn open(_path: impl AsRef<std::path::Path>) -> Result<Self> {
         Ok(Self)
     }
 
     pub fn get(&self, _key: &[u8]) -> Result<Option<Vec<u8>>> {
         Ok(None)
-    }
-
-    pub fn put(&mut self, _key: &[u8], _value: &[u8]) -> Result<()> {
-        Ok(())
-    }
-
-    pub fn delete(&mut self, _key: &[u8]) -> Result<()> {
-        Ok(())
     }
 }
