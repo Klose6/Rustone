@@ -1,23 +1,30 @@
+use crate::memtable::MemTable;
 use crate::Result;
 
 /// The main database handle.
-#[derive(Debug, Default)]
-pub struct Db;
+#[derive(Debug)]
+pub struct Db {
+    memtable: MemTable,
+}
 
 impl Db {
     pub fn open(_path: impl AsRef<std::path::Path>) -> Result<Self> {
-        Ok(Self)
+        Ok(Self {
+            memtable: MemTable::new(),
+        })
     }
 
-    pub fn get(&self, _key: &[u8]) -> Result<Option<Vec<u8>>> {
-        Ok(None)
+    pub fn get(&self, key: &[u8]) -> Result<Option<Vec<u8>>> {
+        Ok(self.memtable.get(key).map(|value| value.to_vec()))
     }
 
-    pub fn put(&mut self, _key: &[u8], _value: &[u8]) -> Result<()> {
+    pub fn put(&mut self, key: &[u8], value: &[u8]) -> Result<()> {
+        self.memtable.put(key, value);
         Ok(())
     }
 
-    pub fn delete(&mut self, _key: &[u8]) -> Result<()> {
+    pub fn delete(&mut self, key: &[u8]) -> Result<()> {
+        self.memtable.delete(key);
         Ok(())
     }
 }

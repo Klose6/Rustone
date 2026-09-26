@@ -7,14 +7,37 @@ fn opens_a_database() {
 }
 
 #[test]
-fn open_and_get_missing_key() {
+fn get_missing_key() {
     let db = Db::open("/tmp/rustone-test").unwrap();
-    assert!(matches!(db.get(b"missing"), Ok(None)));
+    assert_eq!(db.get(b"missing").unwrap(), None);
 }
 
 #[test]
-fn put_and_get_round_trip_is_not_implemented_yet() {
+fn put_and_get() {
     let mut db = Db::open("/tmp/rustone-test").unwrap();
     db.put(b"key", b"value").unwrap();
-    assert!(matches!(db.get(b"key"), Ok(None)));
+    assert_eq!(db.get(b"key").unwrap(), Some(b"value".to_vec()));
+}
+
+#[test]
+fn put_overwrites_existing_value() {
+    let mut db = Db::open("/tmp/rustone-test").unwrap();
+    db.put(b"key", b"old").unwrap();
+    db.put(b"key", b"new").unwrap();
+    assert_eq!(db.get(b"key").unwrap(), Some(b"new".to_vec()));
+}
+
+#[test]
+fn delete_removes_key() {
+    let mut db = Db::open("/tmp/rustone-test").unwrap();
+    db.put(b"key", b"value").unwrap();
+    db.delete(b"key").unwrap();
+    assert_eq!(db.get(b"key").unwrap(), None);
+}
+
+#[test]
+fn delete_missing_key_is_ok() {
+    let mut db = Db::open("/tmp/rustone-test").unwrap();
+    db.delete(b"missing").unwrap();
+    assert_eq!(db.get(b"missing").unwrap(), None);
 }
