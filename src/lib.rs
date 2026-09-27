@@ -3,6 +3,7 @@
 pub mod compaction;
 pub mod db;
 pub mod error;
+pub mod format;
 pub mod iter;
 pub mod manifest;
 pub mod memtable;

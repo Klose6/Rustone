@@ -41,3 +41,43 @@ fn delete_missing_key_is_ok() {
     db.delete(b"missing").unwrap();
     assert_eq!(db.get(b"missing").unwrap(), None);
 }
+
+#[test]
+fn iter_empty_database() {
+    let db = Db::open("/tmp/rustone-test").unwrap();
+    assert_eq!(db.iter().collect::<Vec<_>>(), vec![]);
+}
+
+#[test]
+fn iter_returns_sorted_live_entries() {
+    let mut db = Db::open("/tmp/rustone-test").unwrap();
+    db.put(b"c", b"3").unwrap();
+    db.put(b"a", b"1").unwrap();
+    db.put(b"b", b"2").unwrap();
+
+    let entries: Vec<_> = db
+        .iter()
+        .map(|(key, value)| (key.to_vec(), value.to_vec()))
+        .collect();
+
+    assert_eq!(
+        entries,
+        vec![
+            (b"a".to_vec(), b"1".to_vec()),
+            (b"b".to_vec(), b"2".to_vec()),
+            (b"c".to_vec(), b"3".to_vec()),
+        ]
+    );
+}
+
+#[test]
+fn iter_skips_deleted_keys() {
+    let mut db = Db::open("/tmp/rustone-test").unwrap();
+    db.put(b"a", b"1").unwrap();
+    db.put(b"b", b"2").unwrap();
+    db.put(b"c", b"3").unwrap();
+    db.delete(b"b").unwrap();
+
+    let keys: Vec<_> = db.iter().map(|(key, _)| key.to_vec()).collect();
+    assert_eq!(keys, vec![b"a".to_vec(), b"c".to_vec()]);
+}

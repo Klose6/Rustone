@@ -1,4 +1,4 @@
-use crate::memtable::MemTable;
+use crate::memtable::{MemTable, MemTableIter};
 use crate::Result;
 
 /// The main database handle.
@@ -26,5 +26,10 @@ impl Db {
     pub fn delete(&mut self, key: &[u8]) -> Result<()> {
         self.memtable.delete(key);
         Ok(())
+    }
+
+    /// Iterates live entries in sorted key order.
+    pub fn iter(&self) -> MemTableIter<'_> {
+        self.memtable.iter()
     }
 }
