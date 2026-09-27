@@ -6,6 +6,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     NotFound,
     Io(std::io::Error),
+    CorruptFile(&'static str),
 }
 
 impl fmt::Display for Error {
@@ -13,6 +14,7 @@ impl fmt::Display for Error {
         match self {
             Error::NotFound => write!(f, "key not found"),
             Error::Io(e) => write!(f, "io error: {e}"),
+            Error::CorruptFile(msg) => write!(f, "corrupt file: {msg}"),
         }
     }
 }
@@ -22,6 +24,7 @@ impl std::error::Error for Error {
         match self {
             Error::Io(e) => Some(e),
             Error::NotFound => None,
+            Error::CorruptFile(_) => None,
         }
     }
 }
